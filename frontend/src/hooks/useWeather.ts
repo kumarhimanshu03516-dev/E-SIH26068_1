@@ -4,7 +4,7 @@ import { api, storage } from '../services';
 import { CurrentWeather, ForecastResponse, AlertsResponse, AdvisoryResponse } from '../types';
 
 export function useWeather() {
-  const { location, setCurrentWeather, setAlerts, setAdvisory, setLastSync, role, cropStage, language, isOnline } = useAppStore();
+  const { location, setCurrentWeather, setForecast, setAlerts, setAdvisory, setLastSync, role, cropStage, language, isOnline } = useAppStore();
 
   const fetchCurrentWeather = useCallback(async () => {
     if (!location) return;
@@ -34,18 +34,19 @@ export function useWeather() {
     const cacheKey = `forecast:${location.lat}:${location.lon}`;
     const cached = await storage.getWeatherCache(cacheKey);
     if (cached) {
-      // Forecast is stored but we don't have a setter for it in store yet
+      setForecast(cached);
     }
 
     if (!isOnline) return;
 
     try {
       const response = await api.getForecast(location.lat, location.lon);
+      setForecast(response.data);
       await storage.setWeatherCache(cacheKey, response.data, 2 * 60 * 60 * 1000);
     } catch (error) {
       console.error('Failed to fetch forecast:', error);
     }
-  }, [location, isOnline]);
+  }, [location, setForecast, isOnline]);
 
   const fetchAlerts = useCallback(async () => {
     if (!location) return;

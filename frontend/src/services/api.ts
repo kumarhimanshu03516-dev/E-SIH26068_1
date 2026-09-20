@@ -1,11 +1,11 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { ChatMessage, GroundingData, CurrentWeather, ForecastResponse, AlertsResponse, AdvisoryResponse, SchemesResponse, GeocodeResult, TranslateResponse, Location } from '../types';
 
-const API_BASE_URL = __DEV__ 
-  ? 'http://10.0.2.2:8000'  // Android emulator localhost
-  : 'https://your-production-api.com';
+const API_BASE_URL = Constants.expoConfig?.extra?.apiUrl 
+  ?? (__DEV__ ? 'http://10.0.2.2:8000' : 'https://your-production-api.com');
 
 class ApiService {
   private client: AxiosInstance;

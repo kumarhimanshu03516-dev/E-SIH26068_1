@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAppStore } from './context/store';
 import { storage, notifications, locationService, voice } from './services';
+import { HomeScreen } from './screens/HomeScreen';
 import { ChatScreen } from './screens/ChatScreen';
 import { AlertsScreen } from './screens/AlertsScreen';
 import { AdvisoryScreen } from './screens/AdvisoryScreen';
@@ -42,6 +43,14 @@ function MainTabs() {
         headerShown: false,
       })}
     >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ focused, color }) => <TabBarIcon name={focused ? 'home' : 'home-outline'} focused={focused} color={color} />,
+        }}
+      />
       <Tab.Screen
         name="Chat"
         component={ChatScreen}

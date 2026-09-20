@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { api } from './api';
 import { AlertItem } from '../types';
 
@@ -19,7 +20,13 @@ export class NotificationService {
 
   async registerForPushNotifications(): Promise<string | null> {
     if (!Device.isDevice) {
-      console.log('Must use physical device for push notifications');
+      console.log('Push notifications only work on a physical device');
+      return null;
+    }
+
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+    if (!projectId) {
+      console.warn('Expo projectId not configured (Constants.expoConfig.extra.eas.projectId). Push registration skipped.');
       return null;
     }
 
@@ -32,16 +39,14 @@ export class NotificationService {
     }
 
     if (finalStatus !== 'granted') {
-      console.log('Failed to get push token for push notification!');
+      console.log('Push notification permission not granted');
       return null;
     }
 
     try {
-      const tokenData = await Notifications.getExpoPushTokenAsync({
-        projectId: 'your-expo-project-id',
-      });
+      const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
       this.pushToken = tokenData.data;
-      console.log('Push token:', this.pushToken);
+      console.log('Push token obtained');
       return this.pushToken;
     } catch (error) {
       console.error('Error getting push token:', error);

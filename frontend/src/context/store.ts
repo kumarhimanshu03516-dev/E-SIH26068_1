@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { ChatMessage, Location, Language, Role, CropStage, AdvisoryResponse, AlertsResponse, CurrentWeather } from '../types';
+import { ChatMessage, Location, Language, Role, CropStage, AdvisoryResponse, AlertsResponse, CurrentWeather, ForecastResponse } from '../types';
 import { storage } from '../services/storage';
 
 interface AppState {
@@ -17,6 +17,7 @@ interface AppState {
   
   // Data
   currentWeather: CurrentWeather | null;
+  forecast: ForecastResponse | null;
   alerts: AlertsResponse | null;
   advisory: AdvisoryResponse | null;
   
@@ -108,6 +109,7 @@ export const useAppStore = create<AppState>()(
       setLoading: (isLoading) => set({ isLoading }),
       
       setCurrentWeather: (currentWeather) => set({ currentWeather }),
+      setForecast: (forecast) => set({ forecast }),
       setAlerts: (alerts) => set({ alerts }),
       setAdvisory: (advisory) => set({ advisory }),
       

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { 
   View, 
   Text, 
@@ -16,9 +16,10 @@ import { AlertCard } from '../components/AlertCard';
 import { notifications } from '../services/notifications';
 
 export const AlertsScreen: React.FC = () => {
-  const { alerts, setOnline, isOnline } = useAppStore();
+  const { alerts, setOnline, isOnline, location, language } = useAppStore();
   const { fetchAlerts } = useWeather();
   const [refreshing, setRefreshing] = React.useState(false);
+  const [subscribing, setSubscribing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -36,6 +37,18 @@ export const AlertsScreen: React.FC = () => {
   useEffect(() => {
     handleRefresh();
   }, [handleRefresh]);
+
+  const handleSubscribe = async () => {
+    setSubscribing(true);
+    try {
+      await notifications.subscribeToAlerts(location!, language);
+      Alert.alert('Success', 'Subscribed to weather alerts');
+    } catch {
+      Alert.alert('Error', 'Failed to subscribe');
+    } finally {
+      setSubscribing(false);
+    }
+  };
 
   const activeAlerts = alerts?.alerts?.filter(a => a.id !== 'normal') || [];
 
@@ -109,6 +122,24 @@ export const AlertsScreen: React.FC = () => {
           ))}
         </View>
       </View>
+
+      {location && notifications.getPushToken() && (
+        <View style={styles.subscribeSection}>
+          <TouchableOpacity
+            style={styles.subscribeBtn}
+            onPress={handleSubscribe}
+            disabled={subscribing}
+          >
+            <Ionicons name="notifications" size={20} color="#fff" />
+            <Text style={styles.subscribeBtnText}>
+              {subscribing ? 'Subscribing...' : 'Subscribe to Push Alerts'}
+            </Text>
+          </TouchableOpacity>
+          <Text style={styles.subscribeNote}>
+            Get real-time weather warnings on your device
+          </Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -224,5 +255,32 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#64748b',
     marginTop: 2,
+  },
+  subscribeSection: {
+    padding: 20,
+    paddingBottom: 40,
+    alignItems: 'center',
+  },
+  subscribeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#0ea5e9',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
+    minWidth: 260,
+    justifyContent: 'center',
+  },
+  subscribeBtnText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  subscribeNote: {
+    marginTop: 10,
+    fontSize: 12,
+    color: '#94a3b8',
+    textAlign: 'center',
   },
 });

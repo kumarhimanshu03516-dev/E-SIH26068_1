@@ -103,6 +103,11 @@ export interface SchemesResponse {
   schemes: SchemeItem[];
 }
 
+export interface TranslateResponse {
+  translated_text: string;
+  cached: boolean;
+}
+
 export interface UserPreferences {
   language: Language;
   role: Role;

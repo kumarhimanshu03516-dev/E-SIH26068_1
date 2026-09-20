@@ -23,13 +23,19 @@ cp .env.example .env
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python -m app.main
+# Run on all interfaces so phone/emulator can reach it
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-API runs at `http://localhost:8000` with docs at `http://localhost:8000/docs`
+API runs at `http://localhost:8000` (or your LAN IP) with docs at `http://localhost:8000/docs`
 
 ### Frontend Setup
 ```bash
 cd frontend
+cp .env.example .env
+# Edit .env and set EXPO_PUBLIC_API_URL:
+#   - Android emulator: http://10.0.2.2:8000
+#   - Physical phone on same LAN: http://192.168.x.x:8000 (your PC LAN IP)
+#   - Web browser: http://localhost:8000
 npm install
 npx expo start
 ```
@@ -166,13 +172,14 @@ POST /api/chat
 
 | Screen | Route | Features |
 |--------|-------|----------|
-| **Chat** | Home | Text/voice input, multilingual, grounded responses, cached badges |
-| **Alerts** | `/alerts` | Color-coded (🔴/🟠/🟡/🟢), pull-to-refresh, push notifications |
-| **Advisory** | `/advisory` | Role selector (farmer/fisherman/general), crop stage picker |
-| **Map** | `/map` | React-native-maps, alert markers, precipitation overlay ready |
-| **SOS** | `/sos` | One-tap emergency, dials 112, SMS with location, helpline grid |
-| **Schemes** | `/schemes` | Gov schemes (PMFBY, RWBCIS, KCC, PMKSY, NDRF, PMMSY) with .gov.in links |
-| **Settings** | `/settings` | Language, role, emergency contact, cache management, offline status |
+| **Home** | Home | Current weather, 24‑hour forecast, city search (geocode), quick action buttons |
+| **Chat** | Chat | Text/voice input, multilingual, grounded responses, cached badges |
+| **Alerts** | Alerts | Color-coded (🔴/🟠/🟡/🟢), pull-to-refresh, push notifications subscribe |
+| **Advisory** | Advisory | Role selector (farmer/fisherman/general), crop stage picker |
+| **Map** | Map | React-native-maps, alert markers, precipitation overlay ready |
+| **SOS** | SOS | One-tap emergency, dials 112, SMS with location, helpline grid |
+| **Schemes** | Schemes | Gov schemes (PMFBY, RWBCIS, KCC, PMKSY, NDRF, PMMSY) with .gov.in links |
+| **Settings** | Settings | Language, role, emergency contact, cache management, offline status |
 
 ---
 
